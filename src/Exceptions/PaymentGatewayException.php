@@ -1,18 +1,24 @@
 <?php
 
-namespace Cart53\Payment\Exceptions;
+declare(strict_types=1);
 
+namespace MrRijal\CCAvenue\Exceptions;
+
+use Exception;
 use Throwable;
 
 /**
- * Invalid Request Exception
+ * Thrown when payment gateway parameters are invalid or a gateway operation fails.
  *
- * Thrown when a request is invalid or missing required fields.
+ * Typical causes: missing/invalid merchant config, validation errors on request parameters.
  */
-class PaymentGatewayException extends \Exception
+class PaymentGatewayException extends Exception
 {
-    public function __construct($message = "", $code = 0, Throwable $previous = null)
-    {
+    public function __construct(
+        string $message = '',
+        int $code = 0,
+        ?Throwable $previous = null
+    ) {
         parent::__construct($message, $code, $previous);
     }
 }

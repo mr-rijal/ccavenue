@@ -1,154 +1,93 @@
-# This project is specially written for those Laravel users who are having trouble with CCAvenue integration.
+# CCAvenue for Laravel
 
-# CCAvenue Payment Gateway integration for Laravel 5.x (Supports PHP 7.3)
+Laravel package for [CCAvenue](https://www.ccavenue.com/) payment gateway integration. Supports Laravel 11, 12, and 13.
 
-[![Latest Version on Packagist][ico-version]][link-packagist]
-[![Software License][ico-license]](LICENSE.md)
-[![Total Downloads][ico-downloads]][link-downloads]
+## Requirements
 
-This package is built to integrate CCAvenue payment gateway into your laravel
-project, It is developed keeping in mind other payment gateways also but is limited to ccavenue for at the time of release.
-
-## Important
-
-The code is originially a fork of similar package by [softon/indipay](https://github.com/softon/indipay). But this package uses the latest SDK released by CCAvenue for `php 7.1` Since their old SDK didn't support that version.
+- PHP 8.1+
+- Laravel 11.x, 12.x, or 13.x
 
 ## Installation
 
-<b>Step 1:</b> Install package using composer
+Install via Composer:
 
 ```bash
-$ composer require cart53/ccavenue
+composer require mr-rijal/ccavenue
 ```
 
-<b>Step 2:</b> Add the service provider to the `config/app.php` file in Laravel
+Publish the config and views:
 
-```
- Cart53\Payment\PaymentServiceProvider::class,
-```
-
-<b>Step 3:</b> Add an alias for the Facade to the `config/app.php` file in Laravel
-
-```
- 'Payment' => Cart53\Payment\Facades\Payment::class
+```bash
+php artisan vendor:publish --tag=ccavenue-config
 ```
 
-<b>Step 4:</b> Publish the Config, Middleware & Views by running in your terminal
+## Configuration
 
-```
-  php artisan vendor:publish
-```
+Add your CCAvenue credentials to `.env`:
 
-This above step creates
-
-- `config/payment.php`
-- `app/Http/Middlewares/VerifyCsrfToken.php`
-- `resources/views/vendor/payment/ccavenue.blade.php`
-
-<b>Step 5:</b> Modify the `app\Http\Kernel.php` to use the new Middleware.
-This is required so as to avoid CSRF verification on the Response Url from the payment gateways.
-<b>You may adjust the routes in the config file `config/payment.php` to disable CSRF on your gateways response routes.</b>
-
-```
-   'App\Http\Middleware\VerifyCsrfToken',
+```env
+CCAVENUE_MERCHANT_ID=your_merchant_id
+CCAVENUE_ACCESS_CODE=your_access_code
+CCAVENUE_WORKING_KEY=your_working_key
+CCAVENUE_REDIRECT_URL=payment/success
+CCAVENUE_CANCEL_URL=payment/cancel
+CCAVENUE_CURRENCY=INR
+CCAVENUE_LANGUAGE=EN
+CCAVENUE_TEST_MODE=true
 ```
 
-to
+Config is merged under the `ccavenue` key (published to `config/ccavenue.php`). Set `CCAVENUE_TEST_MODE=false` for production.
 
-```
-   'App\Http\Middleware\VerifyCsrfMiddleware',
-```
+For Laravel 5.x, add the response route to CSRF exceptions in `app/Http/Middleware/VerifyCsrfToken.php` (or use the published middleware). The config option `remove_csrf_check` is also available.
 
 ## Usage
 
-Edit the `config/payment.php`. Set the appropriate Gateway and its parameters. Then in your code... <br>
-
-```
-    use Cart53\Payment\Facades\Payment;
-```
-
-Initiate Purchase Request and Redirect using the default gateway:-
+Resolve the payment gateway and create a purchase:
 
 ```php
-      /* All Required Parameters by your Gateway */
-      $parameters = [
-        'tid' => '1233221223322',
-        'order_id' => '1232212',
-        'amount' => '1200.00',
-      ];
+use MrRijal\CCAvenue\CCAvenue;
 
-      $order = Payment::prepare($parameters);
-      return Payment::process($order);
+$ccavenue = app(CCAvenue::class);
+$response = $ccavenue->purchase([
+    'order_id' => 'ORD-' . uniqid(),
+    'amount'   => 1000.00,
+    // ... other CCAvenue parameters
+]);
 ```
 
-Initiate Purchase Request and Redirect using any of the configured gateway:-
+Handle the redirect response from CCAvenue in your callback controller and decode the response:
 
 ```php
-      /* All Required Parameters by your Gateway */
-
-      $parameters = [
-        'tid' => '1233221223322',
-        'order_id' => '1232212',
-        'amount' => '1200.00',
-      ];
-      // gateway = CCAvenue / others
-
-      $order = Payment::gateway('NameOfGateway')->prepare($parameters);
-      return Payment::process($order);
+$ccavenue = app(CCAvenue::class);
+$result = $ccavenue->response($request);
 ```
 
-Get the Response from the Gateway (Add the Code to the Redirect Url Set in the config file.
-Also add the response route to the `remove_csrf_check` config item to remove CSRF check on these routes.):-
+Or use the facade: `CCAvenue::purchase([...])`, `CCAvenue::response($request)`.
 
-<pre><code> 
-    public function response(Request $request)
-    
-    {
-        // For default Gateway
-        $response = Payment::response($request);
-        // For Otherthan Default Gateway
-        $response = Payment::gateway('NameOfGatewayUsedDuringRequest')->response($request);
-        dd($response);
-    }  
-</code></pre>
-
-## Change log
-
-Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
-
-## Testing
+## Development
 
 ```bash
-$ composer test
+# Run tests
+composer test
+
+# Code style (PHPCS)
+composer check-style
+composer fix-style
+
+# Laravel Pint
+composer pint
 ```
-
-## Contributing
-
-Please see [CONTRIBUTING](CONTRIBUTING.md) and [CODE_OF_CONDUCT](CODE_OF_CONDUCT.md) for details.
-
-## Security
-
-If you discover any security related issues, please email `prashant@cart53.com` instead of using the issue tracker.
-
-## Credits
-
-- [Cart53](http://www.Cart53.com)
-- [Shiburaj Pappu](https://github.com/softon/indipay)
 
 ## License
 
-The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
+This package is open-sourced software licensed under the [MIT License](LICENSE).
 
-[ico-version]: https://img.shields.io/packagist/v/cart53/ccavenue.svg?style=flat-square
-[ico-license]: https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square
-[ico-travis]: https://img.shields.io/travis/cart53/ccavenue/master.svg?style=flat-square
-[ico-scrutinizer]: https://img.shields.io/scrutinizer/coverage/g/cart53/ccavenue.svg?style=flat-square
-[ico-code-quality]: https://img.shields.io/scrutinizer/g/cart53/ccavenue.svg?style=flat-square
-[ico-downloads]: https://img.shields.io/packagist/dt/cart53/ccavenue.svg?style=flat-square
-[link-packagist]: https://packagist.org/packages/cart53/ccavenue
-[link-travis]: https://travis-ci.org/cart53/ccavenue
-[link-scrutinizer]: https://scrutinizer-ci.com/g/cart53/ccavenue/code-structure
-[link-code-quality]: https://scrutinizer-ci.com/g/cart53/ccavenue
-[link-downloads]: https://packagist.org/packages/cart53/ccavenue
-[link-author]: https://github.com/gopal-g
-[link-contributors]: ../../contributors
+## Author
+
+**Prashant Rijal**  
+[https://prashantrijal.com.np](https://prashantrijal.com.np)
+
+## Support
+
+- [Report an issue](https://github.com/mr-rijal/ccavenue/issues)
+- [Source code](https://github.com/mr-rijal/ccavenue)

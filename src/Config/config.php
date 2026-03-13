@@ -1,35 +1,46 @@
 <?php
 
+declare(strict_types=1);
+
+/**
+ * CCAvenue package configuration.
+ *
+ * Publish with: php artisan vendor:publish --tag=ccavenue-config
+ * Then set values in .env and reference config key 'payment' (see docs).
+ */
+
 return [
+    /*
+    |--------------------------------------------------------------------------
+    | Test mode
+    |--------------------------------------------------------------------------
+    | When true, uses CCAvenue test endpoints. Set to false for production.
+    */
+    'testMode' => (bool) env('CCAVENUE_TEST_MODE', true),
 
     /*
     |--------------------------------------------------------------------------
-    | CCAvenue configuration file
+    | CCAvenue credentials and URLs
     |--------------------------------------------------------------------------
-    |   gateway = CCAvenue
-    |   view    = File
-     */
+    */
+    'merchantId' => env('CCAVENUE_MERCHANT_ID', ''),
+    'accessCode' => env('CCAVENUE_ACCESS_CODE', ''),
+    'workingKey' => env('CCAVENUE_WORKING_KEY', ''),
 
-    'gateway' => 'CCAvenue', // Making this option for implementing multiple gateways in future
+    // Route names or paths for redirect/cancel (used with url())
+    'redirectUrl' => env('CCAVENUE_REDIRECT_URL', 'payment/success'),
+    'cancelUrl' => env('CCAVENUE_CANCEL_URL', 'payment/cancel'),
 
-    'testMode' => true, // True for Testing the Gateway [For production false]
+    'currency' => env('CCAVENUE_CURRENCY', 'INR'),
+    'language' => env('CCAVENUE_LANGUAGE', 'EN'),
 
-    'ccavenue' => [ // CCAvenue Parameters
-        'merchantId' => env('CCAVENUE_MERCHANT_ID', ''),
-        'accessCode' => env('CCAVENUE_ACCESS_CODE', ''),
-        'workingKey' => env('CCAVENUE_WORKING_KEY', ''),
-
-        // Should be route address for url() function
-        'redirectUrl' => env('CCAVENUE_REDIRECT_URL', 'payment/success'),
-        'cancelUrl' => env('CCAVENUE_CANCEL_URL', 'payment/cancel'),
-
-        'currency' => env('CCAVENUE_CURRENCY', 'INR'),
-        'language' => env('CCAVENUE_LANGUAGE', 'EN'),
-    ],
-
-    // Add your response link here. In Laravel 5.* you may use the api middleware instead of this.
+    /*
+    |--------------------------------------------------------------------------
+    | CSRF exemption for response URL
+    |--------------------------------------------------------------------------
+    | Add your CCAvenue response callback route here if not using API middleware.
+    */
     'remove_csrf_check' => [
         'payment/response',
     ],
-
 ];

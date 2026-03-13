@@ -1,24 +1,34 @@
 # Contributing
 
-Contributions are **welcome** and will be fully **credited**.
+Thank you for considering contributing to CCAvenue for Laravel.
 
-We accept contributions via Pull Requests on [Github](https://github.com/gopal-g/payment).
+## Code of Conduct
 
+Please read our [Code of Conduct](CODE_OF_CONDUCT.md) before participating.
 
-## Pull Requests
+## How to contribute
 
-- **[PSR-2 Coding Standard](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-2-coding-style-guide.md)** - Check the code style with ``$ composer check-style`` and fix it with ``$ composer fix-style``.
+1. **Report bugs** — Open an [issue](https://github.com/mr-rijal/ccavenue/issues) with steps to reproduce.
+2. **Suggest features** — Open an issue and describe the use case.
+3. **Submit changes** — Fork the repo, create a branch, make your changes, and open a pull request.
 
-- **Add tests!** - Your patch won't be accepted if it doesn't have tests.
+## Development setup
 
-- **Document any change in behaviour** - Make sure the `README.md` and any other relevant documentation are kept up-to-date.
+```bash
+git clone https://github.com/mr-rijal/ccavenue.git
+cd ccavenue
+composer install
+composer test
+composer check-style
+```
 
-- **Consider our release cycle** - We try to follow [SemVer v2.0.0](http://semver.org/). Randomly breaking public APIs is not an option.
+## Pull requests
 
-- **Create feature branches** - Don't ask us to pull from your master branch.
+- Target the `main` branch.
+- Follow PSR-12 and run `composer fix-style` or `composer pint` before submitting.
+- Ensure tests pass with `composer test`.
+- Keep commits focused and messages clear.
 
-- **One pull request per feature** - If you want to do more than one thing, send multiple pull requests.
+## Reporting security issues
 
-- **Send coherent history** - Make sure each individual commit in your pull request is meaningful. If you had to make multiple intermediate commits while developing, please [squash them](http://www.git-scm.com/book/en/v2/Git-Tools-Rewriting-History#Changing-Multiple-Commit-Messages) before submitting.
-
-**Happy coding**!
+Please report security vulnerabilities to **prashant@prashantrijal.com.np** instead of the public issue tracker.
